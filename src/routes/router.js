@@ -30,17 +30,35 @@ router.post("/registro", userMiddleware.validateRegister, registro);
 
 router.post("/login", logueo);
 
-router.get("/profile", userMiddleware.isLoggedIn, async (req, res, next) => {
-  console.log(req.userData);
+/* Mostrar datos de un Usuario específico*/
+router.get("/usuarios/:usuario", async (req, res, next) => {
   const [[user]] = await promisePool.query(
-    `SELECT * FROM USUARIOS WHERE LOWER(id) = LOWER("${req.userData.id}")`
+    `SELECT * FROM USUARIOS WHERE LOWER(usuario) = LOWER("${req.params.usuario}")`
   );
-  res.json({
-    ID: user.id,
-    USUARIO: user.usuario,
-    PASSWORD: user.password,
-    FECHA_DE_REGISTRO: user.fecha__registro,
+  if (!user) {
+    res.status(400).send({
+      message: `[ERROR] El usuario ${req.params.usuario} NO EXISTE`,
+    });
+  } else {
+    res.json({
+      ID: user.id,
+      USUARIO: user.usuario,
+      PASSWORD: user.password,
+      FECHA_DE_REGISTRO: user.fecha__registro,
+    });
+  }
+}),
+  router.get("/profile", userMiddleware.isLoggedIn, async (req, res, next) => {
+    console.log(req.userData);
+    const [[user]] = await promisePool.query(
+      `SELECT * FROM USUARIOS WHERE LOWER(id) = LOWER("${req.userData.id}")`
+    );
+    res.json({
+      ID: user.id,
+      USUARIO: user.usuario,
+      PASSWORD: user.password,
+      FECHA_DE_REGISTRO: user.fecha__registro,
+    });
   });
-});
 
 module.exports = router;

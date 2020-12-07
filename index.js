@@ -5,6 +5,7 @@ const app = express();
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const router = require("./src/routes/router");
+const morgan = require("morgan");
 
 /* Definiendo el PUERTO desde variables de entorno */
 const PUERTO = process.env.PORT || 3000;
@@ -12,6 +13,7 @@ const PUERTO = process.env.PORT || 3000;
 /* Importando cors y bodyParser */
 app.use(cors());
 app.use(bodyParser.json());
+app.use(morgan("dev"));
 
 /* Agregando las Rutas de la API */
 app.use("/api", router);
